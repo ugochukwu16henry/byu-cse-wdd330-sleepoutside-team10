@@ -10,6 +10,7 @@ function addProductToCart(product) {
 
   cartItems.push(product);
   setLocalStorage('so-cart', cartItems);
+  
 }
 // add to cart button event handler
 async function addToCartHandler(e) {
@@ -18,14 +19,21 @@ async function addToCartHandler(e) {
 }
 
 // add listener to Add to Cart button
-const addbottonText = document.getElementById('addToCart');
+const addbottonText= document
+  .getElementById('addToCart');
 
-document.getElementById('addToCart').addEventListener('click', () => {
-  addToCartHandler;
-  // I modefily  the text content of the add item button to change to item add so it can be notice that the item have been added
-  addbottonText.textContent = 'Item added ✅';
-  // I updated the and  return the button  text content back to "Add to cart" in 2s
-  setTimeout(() => {
-    addbottonText.textContent = 'Add to cart';
-  }, 2000);
-});
+document
+  .getElementById('addToCart')
+  .addEventListener('click',() =>{
+      addToCartHandler 
+      // I modefily  the text content of the add item button to change to item add so it can be notice that the item have been added 
+      addbottonText.textContent = 'Item added ✅';
+      // I updated the and  return the button  text content back to "Add to cart" in 2s
+   setTimeout(() => {
+
+      addbottonText.textContent = 'Add to cart';
+
+   },2000)
+  }
+
+  );
