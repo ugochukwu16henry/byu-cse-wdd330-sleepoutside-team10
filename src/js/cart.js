@@ -1,7 +1,25 @@
 import { getLocalStorage } from './utils.mjs';
 
 function renderCartContents() {
-  const cartItems = getLocalStorage('so-cart');
+  // Get cart items with robust error handling
+  let cartItems = getLocalStorage("so-cart");
+
+  // Ensure cartItems is always an array
+  if (!cartItems) {
+    cartItems = [];
+  } else if (!Array.isArray(cartItems)) {
+    // If it's not an array (old single product), convert it
+    console.warn("Cart data was not an array, converting...", cartItems);
+    cartItems = [cartItems];
+  }
+
+  // Check if cart is empty
+  if (cartItems.length === 0) {
+    document.querySelector(".product-list").innerHTML =
+      "<p>Your cart is empty.</p>";
+    return;
+  }
+
   const htmlItems = cartItems.map((item) => cartItemTemplate(item));
   document.querySelector('.product-list').innerHTML = htmlItems.join('');
 }
