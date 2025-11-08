@@ -1,6 +1,6 @@
 // ProductDetails.mjs
 
-import { setLocalStorage, getLocalStorage } from './utils.mjs';
+import { setLocalStorage, getLocalStorage ,discountPrice} from './utils.mjs';
 
 export default class ProductDetails {
   constructor(productId, dataSource) {
@@ -47,6 +47,7 @@ export default class ProductDetails {
   renderProductDetails() {
     // Get the product detail section
     const productSection = document.querySelector('.product-detail');
+    const discount = discountPrice(this.product.FinalPrice,this.product.SuggestedRetailPrice);
 
     // Generate the HTML for product details
     productSection.innerHTML = `
@@ -57,7 +58,8 @@ export default class ProductDetails {
        src="${this.product.Image}"
         alt="${this.product.Name}"
       />
-      <p class="product-card__price">$${this.product.FinalPrice}</p>
+      <p class="product-card__price">$${this.product.FinalPrice} <span class="product-discount" >${discount}% OFF</span></p>
+
       <p class="product__color">${this.product.Colors[0].ColorName}</p>
       <p class="product__description">
         ${this.product.DescriptionHtmlSimple}
