@@ -12,6 +12,7 @@ export default class ProductDetails {
   async init() {
     // Use the datasource to get the details for the current product
     this.product = await this.dataSource.findProductById(this.productId);
+    //  console.log('Product found:', this.product);
 
     // Render the product details HTML
     this.renderProductDetails();
@@ -53,7 +54,7 @@ export default class ProductDetails {
       <h2 class="divider">${this.product.NameWithoutBrand}</h2>
       <img
         class="divider"
-        src="${this.product.Images.PrimaryLarge}"
+       src="${this.product.Image}"
         alt="${this.product.Name}"
       />
       <p class="product-card__price">$${this.product.FinalPrice}</p>
