@@ -3,7 +3,10 @@ import ProductList from './ProductList.mjs';
 import Alert from './Alert1.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-  new Alert();
+    async () => {
+        const alertSystem = new Alert();
+        await alertSystem.init();
+    }
 });
 
 const dataSource = new ProductData('tents');
