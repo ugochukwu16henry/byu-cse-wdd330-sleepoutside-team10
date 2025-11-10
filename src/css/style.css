@@ -261,3 +261,16 @@ footer {
   font-size: var(--small-font);
   padding: 1em;
 }
+
+
+.alert-list {
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 5px;
+}
+
+.alert-list p {
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  border-radius: 3px;
+}

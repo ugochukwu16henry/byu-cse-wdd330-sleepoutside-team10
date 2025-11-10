@@ -57,14 +57,35 @@
           </p>
         </div>
       </div>
-
-      <section class="products">
-        <ul class="product-list"></ul>
-      </section>
+<section class="product-list">
+  <article class="product-card">
+    <h2 class="card__brand">Brand Name</h2>
+    <h3 class="card__name">Product Name</h3>
+    <p>Product description goes here.</p>
+    <p class="card__price">$XX.XX</p>
+  </article>
+  <article class="product-card">
+    <h2 class="card__brand">Brand Name</h2>
+    <h3 class="card__name">Product Name</h3>
+    <p>Product description goes here.</p>
+    <p class="card__price">$XX.XX</p>
+  </article>
+  <!-- Add more product cards as needed -->
+</section>
+     
     </main>
     <footer>
       &copy;2025 ⛺ SleepOutside ⛺ WDD 330 ⛺ BYU-Idaho for BYU-Pathway
       Worldwide Online
     </footer>
+    <script type="module">
+      import Alert from './Alert1.js';
+
+      // Initialize alerts when page loads
+      document.addEventListener('DOMContentLoaded', async () => {
+        const alertSystem = new Alert();
+        await alertSystem.init();
+      });
+    </script>
   </body>
 </html>
