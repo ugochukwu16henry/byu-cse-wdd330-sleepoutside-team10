@@ -1,6 +1,10 @@
 import { renderListWithTemplate } from './utils.mjs';
 
 function productCardTemplate(product) {
+
+ const discount = discountPrice(product.FinalPrice,product.SuggestedRetailPrice);
+ 
+
   return `
     <li class="product-card">
       <a href="product_pages/?products=${product.Id}">
