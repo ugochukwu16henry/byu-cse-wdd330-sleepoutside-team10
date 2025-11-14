@@ -1,8 +1,10 @@
-import { renderListWithTemplate } from './utils.mjs';
+import { renderListWithTemplate,discountPrice} from './utils.mjs';
 
 function productCardTemplate(product) {
 
  const discount = discountPrice(product.FinalPrice,product.SuggestedRetailPrice);
+
+ console.log( discount )
  
 
   return `
@@ -11,7 +13,9 @@ function productCardTemplate(product) {
         <img src="${product.Image}" alt="${product.Name}">
         <h2>${product.Brand.Name}</h2>
         <h3>${product.NameWithoutBrand}</h3>
-        <p class="product-card__price">$${product.FinalPrice}</p>
+        <p class="product-card__price">$${product.FinalPrice}  <span class="product-discount" >${discount}% OFF</span> </p>
+        
+        
       </a>
     </li>
     `;
