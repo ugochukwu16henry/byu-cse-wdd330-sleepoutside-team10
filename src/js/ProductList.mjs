@@ -1,6 +1,10 @@
-import { renderListWithTemplate } from "./utils.mjs";
+import { renderListWithTemplate,discountPrice } from "./utils.mjs";
+
+
 
 function productCardTemplate(product) {
+  //  const productSection = document.querySelector('.product-detail'); 
+  const discount = discountPrice(this.product.FinalPrice,this.product.SuggestedRetailPrice); 
   return `
     <li class="product-card">
       <a href="product_pages/?products=${product.Id}">
@@ -8,6 +12,7 @@ function productCardTemplate(product) {
         <h2>${product.Brand.Name}</h2>
         <h3>${product.Name}</h3>
         <p class="product-card__price">$${product.FinalPrice}</p>
+         <p class="product-card__price">$${this.product.FinalPrice} <span class="product-discount" >${discount}% OFF</span></p> 
       </a>
     </li>
     `;

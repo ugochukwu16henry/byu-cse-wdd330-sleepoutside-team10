@@ -44,3 +44,29 @@ export function renderListWithTemplate(
   }
   parentElement.insertAdjacentHTML(position, htmlStrings.join(''));
 }
+
+ 
+
+export function discountPrice(FinalPrice,SuggestedRetailPrice) 
+
+{ 
+
+   let discount=0; 
+
+  if(FinalPrice < SuggestedRetailPrice) 
+
+  { 
+
+    discount =  (( SuggestedRetailPrice - FinalPrice) / SuggestedRetailPrice) * 100; 
+
+    discount = Math.round(discount); 
+
+     
+
+  } 
+
+ 
+
+  return discount 
+
+} 
