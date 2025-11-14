@@ -1,6 +1,6 @@
 // ProductDetails.mjs
 
-import { setLocalStorage, getLocalStorage ,discountPrice} from './utils.mjs';
+import { setLocalStorage, getLocalStorage,discountPrice } from './utils.mjs';
 
 export default class ProductDetails {
   constructor(productId, dataSource) {
