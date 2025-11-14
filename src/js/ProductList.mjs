@@ -1,4 +1,4 @@
-import { renderListWithTemplate,discountPrice } from "./utils.mjs";
+import { renderListWithTemplate } from './utils.mjs';
 
 function productCardTemplate(product) {
 
@@ -10,10 +10,8 @@ function productCardTemplate(product) {
       <a href="product_pages/?products=${product.Id}">
         <img src="${product.Image}" alt="${product.Name}">
         <h2>${product.Brand.Name}</h2>
-        <h3>${product.Name}</h3>
-        <p class="product-card__price">$${product.FinalPrice}  <span class="product-discount" >${discount}% OFF</span></p>
-         
-        
+        <h3>${product.NameWithoutBrand}</h3>
+        <p class="product-card__price">$${product.FinalPrice}</p>
       </a>
     </li>
     `;
@@ -28,7 +26,6 @@ export default class ProductList {
 
   async init() {
     const list = await this.dataSource.getData();
-    console.log(list)
     this.renderList(list);
   }
 
@@ -38,7 +35,5 @@ export default class ProductList {
 
     // apply use new utility function instead of the commented code above
     renderListWithTemplate(productCardTemplate, this.listElement, list);
-
   }
-
 }
