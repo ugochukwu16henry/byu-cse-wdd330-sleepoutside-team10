@@ -42,31 +42,19 @@ export function renderListWithTemplate(
   if (clear) {
     parentElement.innerHTML = '';
   }
-  parentElement.insertAdjacentHTML(position, htmlStrings.join(''));
+  parentElement.insertAdjacentHTML(position, htmlStrings.join(""));
 }
 
- 
+// creating a funstion that return a discount
+export function discountPrice(FinalPrice,SuggestedRetailPrice)
+{
+   let discount=0;
+  if(FinalPrice < SuggestedRetailPrice)
+  {
+    discount =  (( SuggestedRetailPrice - FinalPrice) / SuggestedRetailPrice) * 100;
+    discount = Math.round(discount);
+    
+  }
 
-export function discountPrice(FinalPrice,SuggestedRetailPrice) 
-
-{ 
-
-   let discount=0; 
-
-  if(FinalPrice < SuggestedRetailPrice) 
-
-  { 
-
-    discount =  (( SuggestedRetailPrice - FinalPrice) / SuggestedRetailPrice) * 100; 
-
-    discount = Math.round(discount); 
-
-     
-
-  } 
-
- 
-
-  return discount 
-
-} 
+  return discount
+}

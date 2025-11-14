@@ -44,56 +44,29 @@ export default class ProductDetails {
     alert('Product added to cart!');
   }
 
-  renderProductDetails() { 
+  renderProductDetails() {
+    // Get the product detail section
+    const productSection = document.querySelector('.product-detail');
+    const discount = discountPrice(this.product.FinalPrice,this.product.SuggestedRetailPrice);
 
-    // Get the product detail section 
+    // Generate the HTML for product details
+    productSection.innerHTML = `
+      <h3>${this.product.Brand.Name}</h3>
+      <h2 class="divider">${this.product.NameWithoutBrand}</h2>
+      <img
+        class="divider"
+       src="${this.product.Image}"
+        alt="${this.product.Name}"
+      />
+      <p class="product-card__price">$${this.product.FinalPrice} <span class="product-discount" >${discount}% OFF</span></p>
 
-    const productSection = document.querySelector('.product-detail'); 
-
-    const discount = discountPrice(this.product.FinalPrice,this.product.SuggestedRetailPrice); 
-
- 
-
-    // Generate the HTML for product details 
-
-    productSection.innerHTML = ` 
-
-      <h3>${this.product.Brand.Name}</h3> 
-
-      <h2 class="divider">${this.product.NameWithoutBrand}</h2> 
-
-      <img 
-
-        class="divider" 
-
-       src="${this.product.Image}" 
-
-        alt="${this.product.Name}" 
-
-      /> 
-
-      <p class="product-card__price">$${this.product.FinalPrice} <span class="product-discount" >${discount}% OFF</span></p> 
-
- 
-
-      <p class="product__color">${this.product.Colors[0].ColorName}</p> 
-
-      <p class="product__description"> 
-
-        ${this.product.DescriptionHtmlSimple} 
-
-      </p> 
-
-      <div class="product-detail__add"> 
-
-        <button id="addToCart" data-id="${this.product.Id}">Add to Cart</button> 
-
-      </div> 
-
-    `; 
-
-  } 
-
-} 
-
- 
+      <p class="product__color">${this.product.Colors[0].ColorName}</p>
+      <p class="product__description">
+        ${this.product.DescriptionHtmlSimple}
+      </p>
+      <div class="product-detail__add">
+        <button id="addToCart" data-id="${this.product.Id}">Add to Cart</button>
+      </div>
+    `;
+  }
+}
