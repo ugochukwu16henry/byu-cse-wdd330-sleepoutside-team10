@@ -29,15 +29,16 @@ export default class ProductList {
   }
 
   async init() {
-    const list = await this.dataSource.getData();
+    const list = await this.dataSource.getData(this.category);
     this.renderList(list);
+
+    // Update page title
+    document.querySelector('.category-name').textContent =
+      this.category.charAt(0).toUpperCase() +
+      this.category.slice(1).replace('-', ' ');
   }
 
   renderList(list) {
-    // const htmlStrings = list.map(productCardTemplate);
-    // this.listElement.insertAdjacentHTML("afterbegin", htmlStrings.join(""));
-
-    // apply use new utility function instead of the commented code above
     renderListWithTemplate(productCardTemplate, this.listElement, list);
   }
 }
