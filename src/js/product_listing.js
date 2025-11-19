@@ -17,6 +17,7 @@ const dataSource = new ProductData(category);
 // // WRONG: this just logs the class instance
 // console.log(dataSource);
 
+
 // CORRECT: fetch the data from JSON
 const products = await dataSource.getData();
 console.log(products); // -> this logs the actual array of products from tents.json
