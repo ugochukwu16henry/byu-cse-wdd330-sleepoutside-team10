@@ -336,13 +336,17 @@ footer {
   text-align: center;
 }
 
-.category-grid {
+.product-grid{
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 2rem;
   margin-top: 2rem;
+  list-style: none;
 }
 
+.product-grid h2 {
+  font-size: small;
+}
 .category-card {
   padding: 1.5rem;
   border: 2px solid #ddd;

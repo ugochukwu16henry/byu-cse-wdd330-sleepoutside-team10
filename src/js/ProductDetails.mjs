@@ -27,14 +27,25 @@ export default class ProductDetails {
   addToCart() {
     // Get existing cart or initialize empty array
     let cart = getLocalStorage('so-cart');
+    const itemInCart = cart.find(item => item.id === product.id);
 
     // Ensure cart is an array
     if (!cart || !Array.isArray(cart)) {
       cart = [];
     }
+    
+    if(itemInCart){
 
-    // Add the current product to the cart array
+      console.log("item found")
+    }
+    else{
+       // Add the current product to the cart array
     cart.push(this.product);
+
+    }
+    
+
+   
 
     // Save the updated cart back to localStorage
     setLocalStorage('so-cart', cart);

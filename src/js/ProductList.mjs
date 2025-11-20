@@ -28,14 +28,10 @@ export default class ProductList {
     this.listElement = listElement;
   }
 
-  async init() {
+   async init() {
     const list = await this.dataSource.getData(this.category);
     this.renderList(list);
-
-    // Update page title
-    document.querySelector('.category-name').textContent =
-      this.category.charAt(0).toUpperCase() +
-      this.category.slice(1).replace('-', ' ');
+    document.querySelector(".title").textContent = this.category;
   }
 
   renderList(list) {
