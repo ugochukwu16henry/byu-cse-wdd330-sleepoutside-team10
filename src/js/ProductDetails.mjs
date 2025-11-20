@@ -27,25 +27,14 @@ export default class ProductDetails {
   addToCart() {
     // Get existing cart or initialize empty array
     let cart = getLocalStorage('so-cart');
-    const itemInCart = cart.find(item => item.id === product.id);
 
     // Ensure cart is an array
     if (!cart || !Array.isArray(cart)) {
       cart = [];
     }
-    
-    if(itemInCart){
 
-      console.log("item found")
-    }
-    else{
-       // Add the current product to the cart array
+    // Add the current product to the cart array
     cart.push(this.product);
-
-    }
-    
-
-   
 
     // Save the updated cart back to localStorage
     setLocalStorage('so-cart', cart);
@@ -58,10 +47,11 @@ export default class ProductDetails {
   renderProductDetails() { 
 
     // Get the product detail section 
+    console.log(this.product.Brand.Name)
 
     const productSection = document.querySelector('.product-detail'); 
 
-    const discount = discountPrice(this.product.FinalPrice,this.product.SuggestedRetailPrice); 
+     const discount = discountPrice(this.product.FinalPrice,this.product.SuggestedRetailPrice); 
 
  
 
@@ -69,37 +59,7 @@ export default class ProductDetails {
 
     productSection.innerHTML = ` 
 
-      <h3>${this.product.Brand.Name}</h3> 
-
-      <h2 class="divider">${this.product.NameWithoutBrand}</h2> 
-
-      <img 
-
-        class="divider" 
-
-       src="${this.product.Image}" 
-
-        alt="${this.product.Name}" 
-
-      /> 
-
-      <p class="product-card__price">$${this.product.FinalPrice} <span class="product-discount" >${discount}% OFF</span></p> 
-
- 
-
-      <p class="product__color">${this.product.Colors[0].ColorName}</p> 
-
-      <p class="product__description"> 
-
-        ${this.product.DescriptionHtmlSimple} 
-
-      </p> 
-
-      <div class="product-detail__add"> 
-
-        <button id="addToCart" data-id="${this.product.Id}">Add to Cart</button> 
-
-      </div> 
+      
 
     `; 
 

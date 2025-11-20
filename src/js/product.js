@@ -5,6 +5,7 @@ import { getParam, loadHeaderFooter } from './utils.mjs';
 loadHeaderFooter();
 
 const productId = getParam('product');
+console.log(productId);
 const dataSource = new ProductData();
 const product = new ProductDetails(productId, dataSource);
 product.init();

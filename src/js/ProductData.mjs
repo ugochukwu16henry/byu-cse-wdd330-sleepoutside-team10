@@ -1,27 +1,30 @@
-const baseURL = import.meta.env.VITE_SERVER_URL;
+export default class ProductData {
+  constructor(category) {
+    this.category = category; // store category in the instance
+  }
 
-function convertToJson(res) {
-  if (res.ok) {
-    return res.json();
-  } else {
-    throw new Error('Bad Response');
+
+//pdmjs
+async getData(category = this.category) {
+  try {
+    const response = await fetch(`/json/${category}.json`);
+    if (!response.ok) throw new Error("Failed to fetch products");
+
+    const data = await response.json();
+
+    // If data has Result (API returns object), use it; else use data itself
+    return data.Result ? data.Result : data;
+
+  } catch (error) {
+    console.error("Fetch error:", error);
+    return [];
   }
 }
 
-export default class ProductData {
-  constructor() {
-    // No longer need category or path in constructor
-  }
 
-  async getData(category) {
-    const response = await fetch(`${baseURL}products/search/${category}`);
-    const data = await convertToJson(response);
-    return data.Result;
-  }
-
+  // find a product by its ID
   async findProductById(id) {
-    const response = await fetch(`${baseURL}product/${id}`);
-    const data = await convertToJson(response);
-    return data.Result;
+    const products = await this.getData(); // fetch products for this.category
+    return products.find(item => item.Id == id); // return a single product object
   }
 }
