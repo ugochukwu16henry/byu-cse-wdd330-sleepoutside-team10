@@ -275,7 +275,6 @@ footer {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-
 .product-categories {
   padding: 2rem;
   text-align: center;
@@ -294,7 +293,9 @@ footer {
   border-radius: 8px;
   text-decoration: none;
   color: inherit;
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
 }
 
 .category-card:hover {
@@ -307,4 +308,3 @@ footer {
   height: 100px;
   margin-bottom: 1rem;
 }
-

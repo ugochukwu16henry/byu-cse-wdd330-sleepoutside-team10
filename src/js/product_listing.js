@@ -5,7 +5,7 @@ import ProductList from './ProductList.mjs';
 // loadHeaderFooter();
 
 const category = getParam('category');   // gets tents/backpacks/etc.
-console.log(category);
+// console.log(category);npm 
   const element = document.querySelector('.product-list'); // container for products
 
 // const dataSource = new ProductData(category);
@@ -18,14 +18,14 @@ const dataSource = new ProductData(category);
 // console.log(dataSource);
 
 
-// CORRECT: fetch the data from JSON
-const products = await dataSource.getData();
-console.log(products); // -> this logs the actual array of products from tents.json
+// CORRECT: fetch the data from JSON inside an async wrapper
+async function initListing() {
+  const products = await dataSource.getData();
+  console.log(products); // -> this logs the actual array of products from tents.json
 
+  const productList = new ProductList(category, dataSource, element);
+  // Initialize and render products
+  productList.init();
+}
 
-// console.log(dataSource);
-
-const productList = new ProductList(category, dataSource, element);
-
-// // Initialize and render products
- productList.init();
+initListing();
