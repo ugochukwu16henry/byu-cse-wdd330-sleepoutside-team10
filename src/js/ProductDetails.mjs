@@ -12,7 +12,7 @@ export default class ProductDetails {
   async init() {
     // Use the datasource to get the details for the current product
     this.product = await this.dataSource.findProductById(this.productId);
-    //  console.log('Product found:', this.product);
+    console.log('Product found:', this.product);
 
     // Render the product details HTML
     this.renderProductDetails();
@@ -47,11 +47,10 @@ export default class ProductDetails {
   renderProductDetails() { 
 
     // Get the product detail section 
-    console.log(this.product.Brand.Name)
 
     const productSection = document.querySelector('.product-detail'); 
 
-     const discount = discountPrice(this.product.FinalPrice,this.product.SuggestedRetailPrice); 
+    const discount = discountPrice(this.product.FinalPrice,this.product.SuggestedRetailPrice); 
 
  
 
@@ -59,7 +58,37 @@ export default class ProductDetails {
 
     productSection.innerHTML = ` 
 
-      
+      <h3>${this.product.Brand.Name}</h3> 
+
+      <h2 class="divider">${this.product.NameWithoutBrand}</h2> 
+
+      <img 
+
+        class="divider" 
+
+       src="${this.product.Image}" 
+
+        alt="${this.product.Name}" 
+
+      /> 
+
+      <p class="product-card__price">$${this.product.FinalPrice} <span class="product-discount" >${discount}% OFF</span></p> 
+
+ 
+
+      <p class="product__color">${this.product.Colors[0].ColorName}</p> 
+
+      <p class="product__description"> 
+
+        ${this.product.DescriptionHtmlSimple} 
+
+      </p> 
+
+      <div class="product-detail__add"> 
+
+        <button id="addToCart" data-id="${this.product.Id}">Add to Cart</button> 
+
+      </div> 
 
     `; 
 

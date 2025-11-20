@@ -9,7 +9,7 @@ function productCardTemplate(product) {
 
   return `
     <li class="product-card">
-      <a href="/product_listing/index.html?category=tents&product=${product.Id}">
+      <a href="/product_pages/?products=${product.Id}">
         <img src="${product.Image}" alt="${product.Name}">
         <h2>${product.Brand.Name}</h2>
         <h3>${product.NameWithoutBrand}</h3>
