@@ -4,15 +4,18 @@ export default class ProductData {
   }
 
 
-//pdmjs
+
 async getData(category = this.category) {
   try {
-   const response = await fetch(`json/tents.json`); 
+    cif (!category) {
+  console.error("Category is missing in URL");
+} else {
+  const response = await fetch(`json/${category}.json`);
+  const products = await response.json();
+  console.log("Products loaded:", products);
+}
 
-    if (!response.ok) throw new Error("Failed to fetch products");
 
-    const data = await response.json();
-     console.log(data);
     // If data has Result (API returns object), use it; else use data itself
     return data.Result ? data.Result : data;
 
@@ -26,8 +29,6 @@ async getData(category = this.category) {
   // find a product by its ID
   async findProductById(id) {
     const products = await this.getData(); // fetch products for this.category
-    console.log("👉 ID from URL:", id);
-  console.log("👉 Products loaded:", products);
     return products.find(item => item.Id == id); // return a single product object
   }
 }
