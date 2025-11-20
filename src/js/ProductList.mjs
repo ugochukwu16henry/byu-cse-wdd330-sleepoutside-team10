@@ -1,11 +1,12 @@
-import { renderListWithTemplate,discountPrice} from './utils.mjs';
+import { renderListWithTemplate, discountPrice } from './utils.mjs';
 
 function productCardTemplate(product) {
+  const discount = discountPrice(
+    product.FinalPrice,
+    product.SuggestedRetailPrice,
+  );
 
- const discount = discountPrice(product.FinalPrice,product.SuggestedRetailPrice);
-
- console.log( discount )
- 
+  console.log(discount);
 
   return `
     <li class="product-card">
