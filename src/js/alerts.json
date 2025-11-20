@@ -1,0 +1,17 @@
+[
+  {
+    "message": "This is only a test",
+    "background": "darkblue",
+    "color": "white"
+  },
+  {
+    "message": "New products arriving this week!",
+    "background": "#28a745",
+    "color": "white"
+  },
+  {
+    "message": "Limited time offer - 20% off all items",
+    "background": "#ff6b6b",
+    "color": "white"
+  }
+]
