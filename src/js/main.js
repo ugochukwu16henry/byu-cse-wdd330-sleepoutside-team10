@@ -2,8 +2,10 @@ import { loadHeaderFooter, getParam } from './utils.mjs';
 import ExternalServices from './ExternalServices.mjs';
 import ProductList from './ProductList.mjs';
 import ProductDetails from './ProductDetails.mjs';
+import CheckoutProcess from './CheckoutProcess.mjs';
+import { getLocalStorage } from './utils.mjs'; // ← MOVED TO TOP!
 
-// Load header + footer + cart badge on EVERY page
+// ——————— LOAD HEADER & FOOTER ON EVERY PAGE ———————
 loadHeaderFooter();
 
 // ——————— PRODUCT LISTING PAGES ———————
@@ -24,48 +26,46 @@ if (productId) {
   product.init();
 }
 
-
-// ——————— CART TOTAL + SHOW CHECKOUT BUTTON ———————
-import { getLocalStorage } from "./utils.mjs";
-
+// ——————— CART: SHOW TOTAL & CHECKOUT BUTTON ———————
 function calculateCartTotal() {
-  const cartItems = getLocalStorage("so-cart") || [];
+  const cartItems = getLocalStorage('so-cart') || [];
   if (cartItems.length === 0) {
-    document.querySelector(".cart-footer-hide")?.classList.remove("show");
+    document.querySelector('.cart-footer-hide')?.classList.remove('show');
     return;
   }
 
   const total = cartItems.reduce((sum, item) => {
-    return sum + item.FinalPrice * (item.Quantity || 1);
+    return sum + parseFloat(item.FinalPrice || 0) * (item.Quantity || 1);
   }, 0);
 
-  const totalElement = document.getElementById("cart-total");
-  const footer = document.querySelector(".cart-footer-hide");
+  const totalElement = document.getElementById('cart-total');
+  const footer = document.querySelector('.cart-footer-hide');
 
   if (totalElement && footer) {
     totalElement.textContent = total.toFixed(2);
-    footer.classList.add("show");
+    footer.classList.add('show');
   }
 }
 
-// Run this on the cart page (and anytime the cart changes)
-if (window.location.pathname.includes("/cart/") || window.location.pathname.endsWith("cart")) {
+if (window.location.pathname.includes('cart')) {
   calculateCartTotal();
 }
+document.addEventListener('cartUpdated', calculateCartTotal);
 
-// Also run it every time something is added to the cart (from ProductDetails)
-document.addEventListener("cartUpdated", calculateCartTotal);
-
-// ——————— CHECKOUT PAGE: SHOW ORDER SUMMARY ———————
-import CheckoutProcess from "./CheckoutProcess.mjs";
-
-if (window.location.pathname.includes("/checkout/") || window.location.pathname.includes("checkout")) {
-  const checkout = new CheckoutProcess("so-cart", ".checkout-summary");
+// ——————— CHECKOUT PAGE: FULLY FUNCTIONAL WITH VALIDATION ———————
+if (window.location.pathname.includes('checkout')) {
+  const checkout = new CheckoutProcess('so-cart', '.checkout-summary');
   checkout.init();
 
-  // Handle form submit
-  document.getElementById("checkoutForm")?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    checkout.checkout(e);
-  });
+  const form = document.getElementById('checkoutForm');
+  if (form) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (form.checkValidity()) {
+        checkout.checkout(e);
+      } else {
+        form.reportValidity();
+      }
+    });
+  }
 }

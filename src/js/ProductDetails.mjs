@@ -19,7 +19,6 @@ export default class ProductDetails {
   addToCart() {
     let cart = getLocalStorage('so-cart') || [];
 
-    // Check if item already exists in cart
     const existingItem = cart.find((item) => item.Id === this.product.Id);
 
     if (existingItem) {
@@ -29,13 +28,15 @@ export default class ProductDetails {
       cart.push(this.product);
     }
 
-    // Save back to localStorage FIRST
     setLocalStorage('so-cart', cart);
-
-    // NOW fire the event so cart total updates
     document.dispatchEvent(new CustomEvent('cartUpdated'));
 
-    // Nice animation
+    // Import and call alertMessage ONLY here — inside the method!
+    import('./utils.mjs').then((utils) => {
+      utils.alertMessage(`${this.product.NameWithoutBrand} added to cart!`);
+    });
+
+    // Button animation
     const button = document.getElementById('addToCart');
     button.textContent = 'Added!';
     button.style.backgroundColor = '#28a745';
@@ -53,36 +54,19 @@ export default class ProductDetails {
 
     document.querySelector('.product-detail').innerHTML = `
       <h3>${this.product.Brand.Name}</h3>
-
       <h2 class="divider">${this.product.NameWithoutBrand}</h2>
-
-      <img
-        class="divider"
-        src="${this.product.Images.PrimaryLarge || this.product.Images.PrimaryMedium}"
-        alt="${this.product.Name}"
-      />
-
+      <img class="divider" src="${this.product.Images.PrimaryLarge || this.product.Images.PrimaryMedium}" alt="${this.product.Name}" />
       <p class="product-card__price">
         $${this.product.FinalPrice}
         ${discount > 0 ? `<span class="product-discount">${discount}% OFF</span>` : ''}
       </p>
-
-      <p class="product__color">
-        ${this.product.Colors?.[0]?.ColorName || 'Color not available'}
-      </p>
-
-      <p class="product__description">
-        ${this.product.DescriptionHtmlSimple}
-      </p>
-
+      <p class="product__color">${this.product.Colors?.[0]?.ColorName || 'Color not available'}</p>
+      <p class="product__description">${this.product.DescriptionHtmlSimple}</p>
       <div class="product-detail__add">
-        <button id="addToCart" data-id="${this.product.Id}">
-          Add to Cart
-        </button>
+        <button id="addToCart" data-id="${this.product.Id}">Add to Cart</button>
       </div>
     `;
 
-    // Update page title
     document.title = `${this.product.NameWithoutBrand} | Sleep Outside`;
   }
 }
