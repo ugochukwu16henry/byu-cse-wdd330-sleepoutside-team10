@@ -32,17 +32,32 @@ export default class ProductDetails {
   }
 
   addToCart() {
-    let cart = getLocalStorage('so-cart') || [];
-    const existingItem = cart.find((item) => item.Id === this.product.Id);
-
-    if (existingItem) {
-      existingItem.Quantity += 1;
-    } else {
-      this.product.Quantity = 1;
-      cart.push(this.product);
+    let cart = getLocalStorage('so-cart');
+  
+    // Ensure cart is an array
+    if (!cart || !Array.isArray(cart)) {
+      cart = [];
     }
+// Check if item already exists in cart
+  const itemInCart = cart.find(item => item.Id === this.product.Id);
 
-    setLocalStorage('so-cart', cart);
+  // Optional: If you want to increase quantity instead of adding again
+  if (itemInCart) {
+   itemInCart.quantity = (itemInCart.quantity || 1) + 1;
+    console.log(5+5);
+  } //
+  else {
+    cart.push({ ...this.product, quantity: 1 });
+   //cart.push(this.product);}
+   }
+
+  // Add the product to cart
+ 
+
+  // Save cart
+  setLocalStorage('so-cart', cart);
+
+    // Optional: Show confirmation
     document.dispatchEvent(new CustomEvent('cartUpdated'));
 
     // NOW WORKS 100% — static import!
