@@ -1,31 +1,13 @@
-import { getParam } from './utils.mjs';
-import ExternalServices from './ExternalServices';
+import ExternalServices from './ExternalServices.mjs';
 import ProductList from './ProductList.mjs';
+import { loadHeaderFooter } from './utils.mjs';
 
-// loadHeaderFooter();
+loadHeaderFooter();
 
-const category = getParam('category');   // gets tents/backpacks/etc.
-// console.log(category);npm 
-  const element = document.querySelector('.product-list'); // container for products
-
-// const dataSource = new ProductData(category);
-
-// import ProductData from "./ProductData.mjs";
-
+const category =
+  new URLSearchParams(window.location.search).get('category') || 'tents';
 const dataSource = new ExternalServices(category);
+const element = document.querySelector('.product-list');
 
-// // WRONG: this just logs the class instance
-// console.log(dataSource);
-
-
-// CORRECT: fetch the data from JSON inside an async wrapper
-async function initListing() {
-  const products = await dataSource.getData();
-  console.log(products); // -> this logs the actual array of products from tents.json
-
-  const productList = new ProductList(category, dataSource, element);
-  // Initialize and render products
-  productList.init();
-}
-
-initListing();
+const listing = new ProductList(category, dataSource, element);
+listing.init();
