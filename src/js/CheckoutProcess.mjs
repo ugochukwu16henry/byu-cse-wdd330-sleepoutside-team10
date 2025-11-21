@@ -1,5 +1,6 @@
 // src/js/CheckoutProcess.mjs
-import { getLocalStorage } from './utils.mjs';
+import { getLocalStorage, alertMessage } from './utils.mjs';
+import ExternalServices from './ExternalServices.mjs'; // ← CRITICAL: Import the class!
 
 function formDataToJSON(formElement) {
   const formData = new FormData(formElement);
@@ -12,107 +13,106 @@ function formDataToJSON(formElement) {
 
 function packageItems(items) {
   return items.map((item) => ({
-    id: item.id,
-    name: item.name,
-    price: item.finalPrice || item.price,
-    quantity: item.quantity || 1,
+    id: item.Id,
+    name: item.NameWithoutBrand || item.Name,
+    price: parseFloat(item.FinalPrice),
+    quantity: item.Quantity || 1,
   }));
 }
 
 export default class CheckoutProcess {
-    constructor(key, outputSelector) {
-        this.key = key;
-        this.outputSelector = outputSelector;
-        this.list = [];
-        this.itemTotal = 0;
-        this.shipping = 0;
-        this.tax = 0;
-        this.orderTotal = 0;
-    }
+  constructor(key, outputSelector) {
+    this.key = key;
+    this.outputSelector = outputSelector;
+    this.list = [];
+    this.itemTotal = 0;
+    this.shipping = 0;
+    this.tax = 0;
+    this.orderTotal = 0;
+  }
 
-    init() {
-        this.list = getLocalStorage(this.key) || [];
-        this.calculateItemSummary();
-        this.calculateOrderTotal(); // ← ADD THIS LINE
-    }
+  init() {
+    this.list = getLocalStorage(this.key) || [];
+    this.calculateItemSummary();
+    this.calculateOrderTotal();
+  }
 
-    calculateItemSummary() {
-        // FIXED: Use correct property names + parseFloat + handle Quantity
-        this.itemTotal = this.list.reduce((sum, item) => {
-            const price = parseFloat(item.FinalPrice || item.finalPrice || 0);
-            const qty = item.Quantity || item.quantity || 1;
-            return sum + price * qty;
-        }, 0);
+  calculateItemSummary() {
+    this.itemTotal = this.list.reduce((sum, item) => {
+      const price = parseFloat(item.FinalPrice || 0);
+      const qty = item.Quantity || 1;
+      return sum + price * qty;
+    }, 0);
 
-        // Count total items (with quantity, not just length)
-        const numItems = this.list.reduce(
-            (sum, item) => sum + (item.Quantity || item.quantity || 1),
-            0,
-        );
+    const numItems = this.list.reduce(
+      (sum, item) => sum + (item.Quantity || 1),
+      0,
+    );
 
-        document.querySelector(`${this.outputSelector} #subtotal`).textContent =
-            `$${this.itemTotal.toFixed(2)}`;
-        document.querySelector(`${this.outputSelector} #num-items`).textContent =
-            numItems;
-    }
+    document.querySelector(`${this.outputSelector} #subtotal`).textContent =
+      `$${this.itemTotal.toFixed(2)}`;
+    document.querySelector(`${this.outputSelector} #num-items`).textContent =
+      numItems;
+  }
 
-    calculateOrderTotal() {
-        // Recalculate tax and shipping based on updated itemTotal
-        this.tax = this.itemTotal * 0.06;
-        const numItems = this.list.reduce(
-            (sum, item) => sum + (item.Quantity || item.quantity || 1),
-            0,
-        );
-        this.shipping = numItems > 0 ? 10 + (numItems - 1) * 2 : 0;
-        this.orderTotal = this.itemTotal + this.tax + this.shipping;
+  calculateOrderTotal() {
+    this.tax = this.itemTotal * 0.06;
+    const numItems = this.list.reduce(
+      (sum, item) => sum + (item.Quantity || 1),
+      0,
+    );
+    this.shipping = numItems > 0 ? 10 + (numItems - 1) * 2 : 0;
+    this.orderTotal = this.itemTotal + this.tax + this.shipping;
+    this.displayOrderTotals();
+  }
 
-        this.displayOrderTotals();
-    }
+  displayOrderTotals() {
+    document.querySelector(`${this.outputSelector} #tax`).textContent =
+      `$${this.tax.toFixed(2)}`;
+    document.querySelector(`${this.outputSelector} #shipping`).textContent =
+      `$${this.shipping.toFixed(2)}`;
+    document.querySelector(`${this.outputSelector} #orderTotal`).textContent =
+      `$${this.orderTotal.toFixed(2)}`;
+  }
 
-    displayOrderTotals() {
-        // Now shows correct values
-        document.querySelector(`${this.outputSelector} #tax`).textContent =
-            `$${this.tax.toFixed(2)}`;
-        document.querySelector(`${this.outputSelector} #shipping`).textContent =
-            `$${this.shipping.toFixed(2)}`;
-        document.querySelector(`${this.outputSelector} #orderTotal`).textContent =
-            `$${this.orderTotal.toFixed(2)}`;
-    }
+  async checkout(event) {
+    event.preventDefault();
+    const form = event.target;
+    const json = formDataToJSON(form);
 
-    async checkout(event) {
-        event.preventDefault();
-        const form = event.target;
-        const json = formDataToJSON(form);
+    json.orderDate = new Date().toISOString();
+    json.items = packageItems(this.list);
+    json.tax = this.tax;
+    json.shipping = this.shipping;
+    json.orderTotal = this.orderTotal;
 
-        json.orderDate = new Date().toISOString();
-        json.items = packageItems(this.list);
-        json.tax = this.tax;
-        json.shipping = this.shipping;
-        json.orderTotal = this.orderTotal;
+    try {
+      const services = new ExternalServices(); // ← NOW WORKS!
+      const result = await services.checkout(json);
 
-        try {
-            const services = new ExternalServices();
-            const result = await services.checkout(json);
-            console.log("Success!", result);
+      console.log('Order placed successfully!', result);
 
-            // Clear cart + go to success page
-            localStorage.removeItem(this.key);
-            location.assign("/checkout/success.html");
-        } catch (err) {
-            // Clear old alerts
-            document.querySelectorAll(".alert").forEach(alert => alert.remove());
+      // Clear cart and go to success page
+      localStorage.removeItem(this.key);
+      location.assign('/checkout/success.html');
+    } catch (err) {
+      // Clear any old alerts
+      document.querySelectorAll('.alert').forEach((a) => a.remove());
 
-            if (err.name === "servicesError" && err.message.errors) {
-                // Server sent detailed field errors
-                for (const field in err.message.errors) {
-                    const message = err.message.errors[field];
-                    alertMessage(`${field}: ${message}`);
-                }
-            } else {
-                // Generic error
-                alertMessage("Sorry, something went wrong. Please check your info and try again.");
-            }
-            console.error(err);
+      // Show real server errors beautifully
+      if (err.name === 'servicesError' && err.message?.errors) {
+        for (const field in err.message.errors) {
+          alertMessage(`${field}: ${err.message.errors[field]}`);
         }
+      } else if (err.message) {
+        alertMessage(`Error: ${err.message}`);
+      } else {
+        alertMessage(
+          'Order failed. Please check your information and try again.',
+        );
+      }
+
+      console.error('Checkout failed:', err);
     }
+  }
 }
