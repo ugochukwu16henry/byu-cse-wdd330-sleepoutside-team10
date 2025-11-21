@@ -1,4 +1,9 @@
-import { setLocalStorage, getLocalStorage, discountPrice } from './utils.mjs';
+import {
+  setLocalStorage,
+  getLocalStorage,
+  discountPrice,
+  alertMessage,
+} from './utils.mjs';
 
 export default class ProductDetails {
   constructor(productId, dataSource) {
@@ -8,17 +13,26 @@ export default class ProductDetails {
   }
 
   async init() {
-    this.product = await this.dataSource.findProductById(this.productId);
-    this.renderProductDetails();
-
-    document
-      .getElementById('addToCart')
-      .addEventListener('click', this.addToCart.bind(this));
+    try {
+      this.product = await this.dataSource.findProductById(this.productId);
+      if (!this.product) {
+        document.querySelector('.product-detail').innerHTML =
+          '<h2>Product not found</h2>';
+        return;
+      }
+      this.renderProductDetails();
+      document
+        .getElementById('addToCart')
+        .addEventListener('click', this.addToCart.bind(this));
+    } catch (error) {
+      console.error('Failed to load product:', error);
+      document.querySelector('.product-detail').innerHTML =
+        '<h2>Failed to load product</h2>';
+    }
   }
 
   addToCart() {
     let cart = getLocalStorage('so-cart') || [];
-
     const existingItem = cart.find((item) => item.Id === this.product.Id);
 
     if (existingItem) {
@@ -31,12 +45,9 @@ export default class ProductDetails {
     setLocalStorage('so-cart', cart);
     document.dispatchEvent(new CustomEvent('cartUpdated'));
 
-    // Import and call alertMessage ONLY here — inside the method!
-    import('./utils.mjs').then((utils) => {
-      utils.alertMessage(`${this.product.NameWithoutBrand} added to cart!`);
-    });
+    // NOW WORKS 100% — static import!
+    alertMessage(`${this.product.NameWithoutBrand} added to cart!`);
 
-    // Button animation
     const button = document.getElementById('addToCart');
     button.textContent = 'Added!';
     button.style.backgroundColor = '#28a745';
@@ -55,7 +66,7 @@ export default class ProductDetails {
     document.querySelector('.product-detail').innerHTML = `
       <h3>${this.product.Brand.Name}</h3>
       <h2 class="divider">${this.product.NameWithoutBrand}</h2>
-      <img class="divider" src="${this.product.Images.PrimaryLarge || this.product.Images.PrimaryMedium}" alt="${this.product.Name}" />
+      <img class="divider" src="${this.product.Images.PrimaryLarge || this.product.Images.PrimaryMedium}" alt="${this.product.NameWithoutBrand}" />
       <p class="product-card__price">
         $${this.product.FinalPrice}
         ${discount > 0 ? `<span class="product-discount">${discount}% OFF</span>` : ''}

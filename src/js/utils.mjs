@@ -1,107 +1,111 @@
-// wrapper for querySelector...returns matching element
 export function qs(selector, parent = document) {
   return parent.querySelector(selector);
 }
-// or a more concise version if you are into that sort of thing:
-// export const qs = (selector, parent = document) => parent.querySelector(selector);
 
-// retrieve data from localstorage
 export function getLocalStorage(key) {
   return JSON.parse(localStorage.getItem(key));
 }
-// save data to local storage
+
 export function setLocalStorage(key, data) {
   localStorage.setItem(key, JSON.stringify(data));
 }
-// set a listener for both touchend and click
+
 export function setClick(selector, callback) {
-  qs(selector).addEventListener('touchend', (event) => {
-    event.preventDefault();
+  qs(selector)?.addEventListener('touchend', (e) => {
+    e.preventDefault();
     callback();
   });
-  qs(selector).addEventListener('click', callback);
+  qs(selector)?.addEventListener('click', callback);
 }
 
-// get the product id from the query string
 export function getParam(param) {
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
-  const product = urlParams.get(param);
-  return product;
+  return urlParams.get(param);
 }
 
 export function renderListWithTemplate(
-  template,
+  templateFn,
   parentElement,
   list,
   position = 'afterbegin',
   clear = false,
 ) {
-  const htmlStrings = list.map(template);
-  // if clear is true we need to clear out the contents of the parent.
-  if (clear) {
-    parentElement.innerHTML = '';
-  }
-  parentElement.insertAdjacentHTML(position, htmlStrings.join(""));
+  if (!parentElement) return;
+  const htmlStrings = list.map(templateFn);
+  if (clear) parentElement.innerHTML = '';
+  parentElement.insertAdjacentHTML(position, htmlStrings.join(''));
 }
 
-// creating a funstion that return a discount
-export function discountPrice(FinalPrice,SuggestedRetailPrice)
-{
-   let discount=0;
-  if(FinalPrice < SuggestedRetailPrice)
-  {
-    discount =  (( SuggestedRetailPrice - FinalPrice) / SuggestedRetailPrice) * 100;
-    discount = Math.round(discount);
-    
-  }
-
-  return discount
+export function discountPrice(finalPrice, suggestedRetailPrice) {
+  if (finalPrice >= suggestedRetailPrice) return 0;
+  const discount =
+    ((suggestedRetailPrice - finalPrice) / suggestedRetailPrice) * 100;
+  return Math.round(discount);
 }
 
 export function renderWithTemplate(template, parentElement, data, callback) {
-  parentElement.innerHTML = template;
-  if (callback) {
-    callback(data);
-  }
+  if (!parentElement) return;
+  let html = template;
+  if (callback) html = callback(template, data);
+  parentElement.innerHTML = html;
 }
 
 async function loadTemplate(path) {
   const res = await fetch(path);
-  const template = await res.text();
-  return template;
+  if (!res.ok) {
+    console.error(`Failed to load template: ${path}`);
+    return '';
+  }
+  return await res.text();
 }
 
 export async function loadHeaderFooter() {
-  const headerTemplate = await loadTemplate('../partials/header.html');
-  const footerTemplate = await loadTemplate('../partials/footer.html');
+  try {
+    const [headerTemplate, footerTemplate] = await Promise.all([
+      loadTemplate('../partials/header.html'),
+      loadTemplate('../partials/footer.html'),
+    ]);
 
-  const headerElement = document.querySelector('#main-header');
-  const footerElement = document.querySelector('#main-footer');
+    const headerEl = document.getElementById('main-header');
+    const footerEl = document.getElementById('main-footer');
 
-  renderWithTemplate(headerTemplate, headerElement);
-  renderWithTemplate(footerTemplate, footerElement);
+    if (headerEl) renderWithTemplate(headerTemplate, headerEl);
+    if (footerEl) renderWithTemplate(footerTemplate, footerEl);
+
+    // Update cart count if cart icon exists
+    const cartIcon = document.querySelector('.cart svg');
+    if (cartIcon) {
+      const count = (getLocalStorage('so-cart') || []).reduce(
+        (sum, item) => sum + (item.Quantity || 1),
+        0,
+      );
+      const badge = document.querySelector('.cart-count');
+      if (badge) {
+        badge.textContent = count;
+        badge.style.display = count > 0 ? 'flex' : 'none';
+      }
+    }
+  } catch (err) {
+    console.error('loadHeaderFooter failed:', err);
+  }
 }
 
-
 export function alertMessage(message, scroll = true) {
-  const alert = document.createElement('div');
-  alert.classList.add('alert');
-  alert.innerHTML = `
-    <span>${message}</span>
-    <span class="close">&times;</span>
-  `;
+  // Remove old alerts
+  document.querySelectorAll('.alert').forEach((a) => a.remove());
 
-  alert.addEventListener('click', function (e) {
-    if (e.target.classList.contains('close')) {
-      this.remove();
-    }
+  const alert = document.createElement('div');
+  alert.className = 'alert';
+  alert.innerHTML = `<span>${message}</span><span class="close">×</span>`;
+
+  alert.addEventListener('click', (e) => {
+    if (e.target.classList.contains('close')) alert.remove();
   });
 
   const main = document.querySelector('main');
-  main.prepend(alert);
-
-  if (scroll) {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (main) {
+    main.prepend(alert);
+    if (scroll) window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
