@@ -29,8 +29,11 @@ export default class ProductDetails {
       cart.push(this.product);
     }
 
-    // Save back to localStorage
+    // Save back to localStorage FIRST
     setLocalStorage('so-cart', cart);
+
+    // NOW fire the event so cart total updates
+    document.dispatchEvent(new CustomEvent('cartUpdated'));
 
     // Nice animation
     const button = document.getElementById('addToCart');

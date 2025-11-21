@@ -6,10 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Checkout | Sleep Outside</title>
   <link rel="stylesheet" href="../css/style.css">
+  <script src="../js/main.js" type="module"></script>
 </head>
 
 <body>
   <header class="divider" id="main-header"></header>
+
   <main class="divider checkout">
     <section class="checkout-layout">
       <div class="checkout-form">
@@ -22,16 +24,22 @@
             <label class="top">Street Address* <input type="text" name="street" required /></label>
             <label class="top">City* <input type="text" name="city" required /></label>
             <label class="top">State* <input type="text" name="state" required /></label>
-            <label class="top">Zip Code* <input type="text" name="zip" pattern="\d{5}" required
-                oninput="checkout.calculateOrderTotal()" /></label>
+            <label class="top">Zip Code*
+              <input type="text" name="zip" pattern="\d{5}" required />
+            </label>
           </fieldset>
 
           <fieldset>
             <legend>Payment Information</legend>
-            <label class="top">Card Number* <input type="text" name="cardNumber" placeholder="1234123412341234"
-                required /></label>
-            <label class="top">Expiration* <input type="text" name="expiration" placeholder="12/28" required /></label>
-            <label class="top">Security Code* <input type="text" name="code" placeholder="123" required /></label>
+            <label class="top">Card Number*
+              <input type="text" name="cardNumber" placeholder="1234123412341234" required />
+            </label>
+            <label class="top">Expiration*
+              <input type="text" name="expiration" placeholder="12/28" required />
+            </label>
+            <label class="top">Security Code*
+              <input type="text" name="code" placeholder="123" required />
+            </label>
           </fieldset>
 
           <button type="submit" id="checkoutSubmit">Checkout</button>
@@ -47,23 +55,8 @@
       </div>
     </section>
   </main>
-  <footer id="main-footer">&copy;NOT a real business</footer>
 
-  <script type="module">
-    import CheckoutProcess from "../js/CheckoutProcess.mjs";
-    import { loadHeaderFooter } from "../js/utils.mjs";
-
-    loadHeaderFooter();
-
-    const checkout = new CheckoutProcess("so-cart", ".checkout-summary");
-    checkout.init();
-
-    document
-      .getElementById("checkoutForm")
-      .addEventListener("submit", (e) => checkout.checkout(e));
-  </script>
+  <footer id="main-footer">© NOT a real business</footer>
 </body>
 
 </html>
-
-   

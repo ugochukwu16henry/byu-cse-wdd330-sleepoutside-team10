@@ -33,19 +33,23 @@ export default class CheckoutProcess {
   init() {
     this.list = getLocalStorage(this.key) || [];
     this.calculateItemSummary();
+    this.calculateOrderTotal(); // ← ADD THIS LINE
   }
 
   calculateItemSummary() {
-    // Calculate subtotal
-    this.itemTotal = this.list.reduce(
-      (sum, item) => sum + item.finalPrice * item.quantity,
+    // FIXED: Use correct property names + parseFloat + handle Quantity
+    this.itemTotal = this.list.reduce((sum, item) => {
+      const price = parseFloat(item.FinalPrice || item.finalPrice || 0);
+      const qty = item.Quantity || item.quantity || 1;
+      return sum + price * qty;
+    }, 0);
+
+    // Count total items (with quantity, not just length)
+    const numItems = this.list.reduce(
+      (sum, item) => sum + (item.Quantity || item.quantity || 1),
       0,
     );
 
-    // Count number of items (not quantity!)
-    const numItems = this.list.length;
-
-    // Display subtotal and item count
     document.querySelector(`${this.outputSelector} #subtotal`).textContent =
       `$${this.itemTotal.toFixed(2)}`;
     document.querySelector(`${this.outputSelector} #num-items`).textContent =
@@ -53,19 +57,20 @@ export default class CheckoutProcess {
   }
 
   calculateOrderTotal() {
-    // Tax: 6% of subtotal
+    // Recalculate tax and shipping based on updated itemTotal
     this.tax = this.itemTotal * 0.06;
-
-    // Shipping: $10 first item + $2 each additional
-    this.shipping = this.list.length > 0 ? 10 + (this.list.length - 1) * 2 : 0;
-
-    // Order total
+    const numItems = this.list.reduce(
+      (sum, item) => sum + (item.Quantity || item.quantity || 1),
+      0,
+    );
+    this.shipping = numItems > 0 ? 10 + (numItems - 1) * 2 : 0;
     this.orderTotal = this.itemTotal + this.tax + this.shipping;
 
     this.displayOrderTotals();
   }
 
   displayOrderTotals() {
+    // Now shows correct values
     document.querySelector(`${this.outputSelector} #tax`).textContent =
       `$${this.tax.toFixed(2)}`;
     document.querySelector(`${this.outputSelector} #shipping`).textContent =
