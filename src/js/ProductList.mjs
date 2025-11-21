@@ -6,20 +6,27 @@ function productCardTemplate(product) {
     product.SuggestedRetailPrice,
   );
 
-  console.log(discount);
+  const imageUrl =
+    product.Images?.PrimaryLarge ||
+    product.Images?.PrimaryMedium ||
+    product.Image ||
+    '/images/no-image.png';
 
-  return `
-    <li class="product-card">
-      <a href="product_pages/?products=${product.Id}">
-        <img src="${product.Image}" alt="${product.Name}">
-        <h2>${product.Brand.Name}</h2>
-        <h3>${product.NameWithoutBrand}</h3>
-        <p class="product-card__price">$${product.FinalPrice}  <span class="product-discount" >${discount}% OFF</span> </p>
-        
-        
-      </a>
-    </li>
-    `;
+  return `<li class="product-card">
+    <a href="../product_pages/index.html?product=${product.Id}">
+      <img
+        src="${imageUrl}"
+        alt="Image of ${product.NameWithoutBrand}"
+        loading="lazy"
+      />
+      <h3 class="card__brand">${product.Brand?.Name || 'Unknown Brand'}</h3>
+      <h2 class="card__name">${product.NameWithoutBrand}</h2>
+      <p class="product-card__price">
+        $${product.FinalPrice}
+        ${discount > 0 ? `<span class="product-discount">${discount}% OFF</span>` : ''}
+      </p>
+    </a>
+  </li>`;
 }
 
 export default class ProductList {
@@ -33,10 +40,7 @@ export default class ProductList {
     const list = await this.dataSource.getData(this.category);
     this.renderList(list);
 
-    // Update page title
-    document.querySelector('.category-name').textContent =
-      this.category.charAt(0).toUpperCase() +
-      this.category.slice(1).replace('-', ' ');
+    document.title = `Sleep Outside | ${this.category.charAt(0).toUpperCase() + this.category.slice(1)}`;
   }
 
   renderList(list) {

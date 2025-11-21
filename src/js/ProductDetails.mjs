@@ -1,6 +1,4 @@
-// ProductDetails.mjs
-
-import { setLocalStorage, getLocalStorage,discountPrice } from './utils.mjs';
+import { setLocalStorage, getLocalStorage, discountPrice } from './utils.mjs';
 
 export default class ProductDetails {
   constructor(productId, dataSource) {
@@ -10,90 +8,81 @@ export default class ProductDetails {
   }
 
   async init() {
-    // Use the datasource to get the details for the current product
     this.product = await this.dataSource.findProductById(this.productId);
-    //  console.log('Product found:', this.product);
-
-    // Render the product details HTML
     this.renderProductDetails();
 
-    // Add listener to the Add to Cart button
-    // Notice the .bind(this) - necessary to maintain correct context
     document
       .getElementById('addToCart')
       .addEventListener('click', this.addToCart.bind(this));
   }
 
   addToCart() {
-    // Get existing cart or initialize empty array
-    let cart = getLocalStorage('so-cart');
+    let cart = getLocalStorage('so-cart') || [];
 
-    // Ensure cart is an array
-    if (!cart || !Array.isArray(cart)) {
-      cart = [];
+    // Check if item already exists in cart
+    const existingItem = cart.find((item) => item.Id === this.product.Id);
+
+    if (existingItem) {
+      existingItem.Quantity += 1;
+    } else {
+      this.product.Quantity = 1;
+      cart.push(this.product);
     }
 
-    // Add the current product to the cart array
-    cart.push(this.product);
-
-    // Save the updated cart back to localStorage
+    // Save back to localStorage FIRST
     setLocalStorage('so-cart', cart);
 
-    // Optional: Show confirmation
-    console.log('Product added to cart!', this.product.Name);
-    alert('Product added to cart!');
+    // NOW fire the event so cart total updates
+    document.dispatchEvent(new CustomEvent('cartUpdated'));
+
+    // Nice animation
+    const button = document.getElementById('addToCart');
+    button.textContent = 'Added!';
+    button.style.backgroundColor = '#28a745';
+    setTimeout(() => {
+      button.textContent = 'Add to Cart';
+      button.style.backgroundColor = '';
+    }, 1500);
   }
 
-  renderProductDetails() { 
+  renderProductDetails() {
+    const discount = discountPrice(
+      this.product.FinalPrice,
+      this.product.SuggestedRetailPrice,
+    );
 
-    // Get the product detail section 
+    document.querySelector('.product-detail').innerHTML = `
+      <h3>${this.product.Brand.Name}</h3>
 
-    const productSection = document.querySelector('.product-detail'); 
+      <h2 class="divider">${this.product.NameWithoutBrand}</h2>
 
-    const discount = discountPrice(this.product.FinalPrice,this.product.SuggestedRetailPrice); 
+      <img
+        class="divider"
+        src="${this.product.Images.PrimaryLarge || this.product.Images.PrimaryMedium}"
+        alt="${this.product.Name}"
+      />
 
- 
+      <p class="product-card__price">
+        $${this.product.FinalPrice}
+        ${discount > 0 ? `<span class="product-discount">${discount}% OFF</span>` : ''}
+      </p>
 
-    // Generate the HTML for product details 
+      <p class="product__color">
+        ${this.product.Colors?.[0]?.ColorName || 'Color not available'}
+      </p>
 
-    productSection.innerHTML = ` 
+      <p class="product__description">
+        ${this.product.DescriptionHtmlSimple}
+      </p>
 
-      <h3>${this.product.Brand.Name}</h3> 
+      <div class="product-detail__add">
+        <button id="addToCart" data-id="${this.product.Id}">
+          Add to Cart
+        </button>
+      </div>
+    `;
 
-      <h2 class="divider">${this.product.NameWithoutBrand}</h2> 
-
-      <img 
-
-        class="divider" 
-
-       src="${this.product.Image}" 
-
-        alt="${this.product.Name}" 
-
-      /> 
-
-      <p class="product-card__price">$${this.product.FinalPrice} <span class="product-discount" >${discount}% OFF</span></p> 
-
- 
-
-      <p class="product__color">${this.product.Colors[0].ColorName}</p> 
-
-      <p class="product__description"> 
-
-        ${this.product.DescriptionHtmlSimple} 
-
-      </p> 
-
-      <div class="product-detail__add"> 
-
-        <button id="addToCart" data-id="${this.product.Id}">Add to Cart</button> 
-
-      </div> 
-
-    `; 
-
-  } 
-
-} 
-
- 
+    // Update page title
+    document.title = `${this.product.NameWithoutBrand} | Sleep Outside`;
+  }
+}
