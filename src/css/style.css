@@ -415,3 +415,33 @@ footer {
 .checkout-btn:hover {
   background-color: #0052a3;
 }
+
+.cart-footer-hide {
+  display: none;
+  margin-top: 30px;
+  text-align: right;
+}
+
+.cart-footer-hide.show {
+  display: block;
+}
+
+.cart-total {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.checkout-btn {
+  background: #0066cc;
+  color: white;
+  padding: 14px 30px;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.checkout-btn:hover {
+  background: #0052a3;
+}
