@@ -7,7 +7,15 @@ async function convertToJson(res) {
   if (res.ok) {
     return jsonResponse;
   } else {
-    throw { name: 'servicesError', message: jsonResponse };
+   class ServicesError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'ServicesError';
+  }
+}
+
+throw new ServicesError(JSON.stringify(jsonResponse));
+
   }
 }
 
