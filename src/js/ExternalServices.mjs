@@ -25,3 +25,18 @@ export default class ProductData {
     return data.Result;
   }
 }
+
+// src/js/ExternalServices.mjs
+export async function checkout(payload) {
+  const options = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  };
+  const response = await fetch("https://wdd330-backend.onrender.com/checkout", options);
+  const data = await response.json();
+  if (!response.ok) throw data;
+  return data;
+}

@@ -1,5 +1,5 @@
 import { getParam } from './utils.mjs';
-import ProductData from './ProductData.mjs';
+import ExternalServices from './ExternalServices';
 import ProductList from './ProductList.mjs';
 
 // loadHeaderFooter();
@@ -12,7 +12,7 @@ const category = getParam('category');   // gets tents/backpacks/etc.
 
 // import ProductData from "./ProductData.mjs";
 
-const dataSource = new ProductData(category);
+const dataSource = new ExternalServices(category);
 
 // // WRONG: this just logs the class instance
 // console.log(dataSource);
