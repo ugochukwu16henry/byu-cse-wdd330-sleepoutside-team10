@@ -4,7 +4,7 @@ import ProductList from './ProductList.mjs';
 
 loadHeaderFooter();
 
-const dataSource = new ProductData('tents');
+const dataSource = new ExternalServices.mjs('tents');
 const element = document.querySelector('.product-list');
 const productList = new ProductList('Tents', dataSource, element);
 
