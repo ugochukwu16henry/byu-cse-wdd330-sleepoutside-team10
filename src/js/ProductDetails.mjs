@@ -21,14 +21,21 @@ export default class ProductDetails {
         return;
       }
       this.renderProductDetails();
+      this.displayComment(this.product.Id);
+      this.setUpcommentForm();
+      
       document
         .getElementById('addToCart')
         .addEventListener('click', this.addToCart.bind(this));
+        
     } catch (error) {
       console.error('Failed to load product:', error);
       document.querySelector('.product-detail').innerHTML =
         '<h2>Failed to load product</h2>';
     }
+  
+   
+    
   }
 
   addToCart() {
@@ -51,8 +58,8 @@ export default class ProductDetails {
    //cart.push(this.product);}
    }
 
-  // Add the product to cart
- 
+  // Add the product to comment
+  
 
   // Save cart
   setLocalStorage('so-cart', cart);
@@ -71,6 +78,78 @@ export default class ProductDetails {
       button.style.backgroundColor = '';
     }, 1500);
   }
+
+ // Save comment to localStorage
+addComment(productId, commentText) {
+  const allComments = JSON.parse(localStorage.getItem("comments")) || {};
+
+  if (!allComments[productId]) {
+    allComments[productId] = [];
+  }
+
+  allComments[productId].push({
+    message: commentText,
+    date: new Date().toLocaleString()
+  });
+
+  localStorage.setItem("comments", JSON.stringify(allComments));
+}
+
+  // comment form
+
+  setUpcommentForm()
+  {
+    const form = document.getElementById("submitComment");
+    const input = document.getElementById("commentInput");
+
+
+    form.addEventListener('click', (e) =>
+  {
+    e.preventDefault();
+
+     const commentText = input.value.trim();
+
+
+    if(commentText ==="")
+    {
+      alert("please write soething!");
+      return;
+    }
+    
+    this.addComment(this.product.Id,commentText);
+    this.displayComment(this.product.Id);
+    input.value ="";
+
+
+  })
+  }
+
+  getComments(productId){
+    const allComments = JSON.parse(localStorage.getItem("productComments")) || {};
+    return allComments[productId] || [];
+  }
+   
+
+
+displayComment(productId) {
+  const commentsList = document.getElementById("comments-list");
+  const allComments = JSON.parse(localStorage.getItem("comments")) || {};
+  const comments = allComments[productId] || [];
+
+  commentsList.innerHTML = "";
+
+   comments.slice().reverse().forEach(comment => {
+    if (!comment || !comment.message) return; // skip null/invalid items
+
+    const div = document.createElement("div");
+    div.className = "comment";
+    div.innerHTML = `
+      <p>${comment.message}</p>
+      <small>${comment.date}</small>
+    `;
+    commentsList.appendChild(div);
+  });
+}
 
   renderProductDetails() {
     const discount = discountPrice(
@@ -91,6 +170,14 @@ export default class ProductDetails {
       <div class="product-detail__add">
         <button id="addToCart" data-id="${this.product.Id}">Add to Cart</button>
       </div>
+      
+       <div class="comment-section">
+        <h3>Comments</h3>
+        <textarea id="commentInput" placeholder="write your comment...."></textarea>
+        <button id="submitComment">Submit</button>
+        <div id="comments-list"></div>
+    </div>
+
     `;
 
     document.title = `${this.product.NameWithoutBrand} | Sleep Outside`;
